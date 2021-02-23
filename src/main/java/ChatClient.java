@@ -5,12 +5,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class ChatClient extends Frame{
-
     TextField tfText = new TextField();
     TextArea taContent = new TextArea();
-
     public static void main(String[] args) {
-
         ChatClient chatClient = new ChatClient();
         chatClient.launchFrame();
     }
@@ -24,7 +21,6 @@ public class ChatClient extends Frame{
         pack();
 
         addWindowListener(new WindowAdapter() {
-
             @Override
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
@@ -33,7 +29,6 @@ public class ChatClient extends Frame{
 
         tfText.addActionListener(new TFListener());
         setVisible(true);
-
     }
 
     private class TFListener implements ActionListener {
@@ -43,8 +38,8 @@ public class ChatClient extends Frame{
             String s = tfText.getText().trim();
             taContent.setText(s);
             tfText.setText("");
-
         }
     }
+
 
 }
