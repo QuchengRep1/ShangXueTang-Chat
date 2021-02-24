@@ -1,4 +1,5 @@
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -6,32 +7,37 @@ import java.net.Socket;
 public class ChatServer {
 
     static boolean started = false;
+    static ServerSocket ss = null;
+    static Socket s = null;
+    static DataInputStream dis = null;
+    boolean bConnect = false;
 
     public static void main(String[] args) {
-        ServerSocket ss = null;
-        Socket s = null;
-        DataInputStream dis = null;
 
+        new ChatServer().serverStart();
+
+    }
+
+    public void serverStart() {
         try {
             ss = new ServerSocket(9989);
-        } catch (IOException e) {e.printStackTrace();}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             started = true;
             while (started) {
-                boolean bConnect = false;
-                s = ss.accept();
-                bConnect = true;
-                System.out.println("a client connected!");
-                dis = new DataInputStream(s.getInputStream());
-                while (bConnect) {
-                    String str = dis.readUTF();
-                    System.out.println(str);
-                }
+                Client sc = new Client(ss.accept()); // accept为阻塞形方法
+                Thread thread = new Thread(sc);
+                thread.start();
+                //new Thread(new Client(ss.accept())).run();
 
             }
-        } catch (Exception e) {
+        } catch (EOFException e) {
             System.out.println("Client closed!");
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (dis != null) dis.close();
@@ -39,8 +45,35 @@ public class ChatServer {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-           // e.printStackTrace();
+            // e.printStackTrace();
+        }
+    }
 
+    class Client implements Runnable {
+
+        Socket ClientSocket;
+
+        public Client(Socket s) {
+            ClientSocket = s;
+
+        }
+
+        @Override
+        public void run() {
+            try {
+                bConnect = true;
+                System.out.println("a client connected!");
+                dis = new DataInputStream(ClientSocket.getInputStream());
+                while (bConnect) {
+                    String str = dis.readUTF(); //readUTF为阻塞形方法
+                    System.out.println(str);
+                }
+            } catch (EOFException e) {
+                System.out.println("Client closed!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
+
