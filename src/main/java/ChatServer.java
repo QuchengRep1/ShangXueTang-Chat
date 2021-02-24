@@ -5,17 +5,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ChatServer {
-
     static boolean started = false;
     static ServerSocket ss = null;
     static Socket s = null;
-    static DataInputStream dis = null;
-    boolean bConnect = false;
+
 
     public static void main(String[] args) {
-
         new ChatServer().serverStart();
-
     }
 
     public void serverStart() {
@@ -40,22 +36,20 @@ public class ChatServer {
             e.printStackTrace();
         } finally {
             try {
-                if (dis != null) dis.close();
                 if (s != null) s.close();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            // e.printStackTrace();
         }
     }
 
     class Client implements Runnable {
-
-        Socket ClientSocket;
+        private Socket ClientSocket ;
+        private DataInputStream dis;
+        private boolean bConnect = false;
 
         public Client(Socket s) {
             ClientSocket = s;
-
         }
 
         @Override
