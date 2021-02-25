@@ -14,7 +14,6 @@ public class ChatServer {
     ServerSocket ss = null;
     List<Client> clients = new ArrayList<>();
 
-
     public static void main(String[] args) {
         new ChatServer().start();
     }
@@ -103,14 +102,19 @@ public class ChatServer {
                 System.out.println("Client closed!");
                 System.out.println("当前客户端存在数量：" + Thread.activeCount());
                 if ( Thread.activeCount() <= 3) {
-                    System.out.println("客户端已为空，关闭服务器端...");}
+                    System.out.println("客户端已为空，关闭服务器端...");
+                    System.exit(0);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
                     if(dis != null) dis.close();
                     if(dos != null) dos.close();
-                    if(s  !=null) s.close();
+                    if(s  !=null) {
+                        s.close();
+                        //s = null;
+                    }
                 }catch (IOException e1) {
                     e1.printStackTrace();
                 }
