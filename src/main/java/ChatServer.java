@@ -101,6 +101,9 @@ public class ChatServer {
                 }
             } catch (EOFException e) {
                 System.out.println("Client closed!");
+                System.out.println("当前客户端存在数量：" + Thread.activeCount());
+                if ( Thread.activeCount() <= 3) {
+                    System.out.println("客户端已为空，关闭服务器端...");}
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
