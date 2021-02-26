@@ -1,3 +1,4 @@
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import sun.awt.windows.ThemeReader;
 
 import java.awt.*;
@@ -12,13 +13,14 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class ChatClient extends Frame{
+public class ChatClient extends Frame {
     TextField tfText = new TextField();
     TextArea taContent = new TextArea();
     Socket s = null;
     DataOutputStream dos = null;
     DataInputStream dis = null;
     private boolean bConnected = false;
+    Thread tRecv = new Thread(new RecvThread());
 
     public static void main(String[] args) {
         ChatClient chatClient = new ChatClient();
@@ -26,11 +28,10 @@ public class ChatClient extends Frame{
     }
 
     public void launchFrame() {
-        setLocation(400,300);
-        setSize(300,300);
-
-        add(tfText,BorderLayout.SOUTH);
-        add(taContent,BorderLayout.NORTH);
+        setLocation(400, 300);
+        setSize(300, 300);
+        add(tfText, BorderLayout.SOUTH);
+        add(taContent, BorderLayout.NORTH);
         pack();
 
         addWindowListener(new WindowAdapter() {
@@ -44,7 +45,7 @@ public class ChatClient extends Frame{
         tfText.addActionListener(new TFListener());
         setVisible(true);
         connect();
-        new Thread(new RecvThread()).start();
+        tRecv.start();
     }
 
     public void connect() {
@@ -62,13 +63,28 @@ public class ChatClient extends Frame{
 
     public void disconnect() {
         try {
-            bConnected = false;
             dos.close();
             dis.close();
             s.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+/*
+        try {
+            bConnected = false;
+            tRecv.join(); //利用join方法让线程正常化停止。
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+        } finally {
+        try {
+            dos.close();
+            dis.close();
+            s.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        }
+*/
     }
 
     private class TFListener implements ActionListener {
@@ -99,6 +115,8 @@ public class ChatClient extends Frame{
                 //System.out.println(str);
                 taContent.setText(taContent.getText() + str + '\n');
             }
+                } catch (SocketException e) {
+                    System.out.println("System out, bye~");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
