@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -69,9 +70,9 @@ public class ChatServer {
             try {
                 dos.writeUTF(str);
             } catch (IOException e) {
-                e.printStackTrace();
+                clients.remove(this);
+                System.out.println("对方已退出，将从List中去除C端...");
             }
-
         }
 
         @Override
